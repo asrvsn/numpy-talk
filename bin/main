@@ -9,9 +9,8 @@ import numpy as np
 
 import kuramoto as km
 
-# @profile
 def main(N: int, dtype: np.dtype, view=False, **kwargs) -> km.KuramotoSolver:
-	solver = km.SimpleSolver(N=N, dtype=dtype, store_samples=view, **kwargs)
+	solver = km.NumpySolver(N=N, dtype=dtype, store_samples=view, **kwargs)
 	solver.integrate()
 
 	if view:
