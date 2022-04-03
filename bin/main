@@ -9,15 +9,21 @@ import numpy as np
 
 import kuramoto as km
 
-@profile
-def main(N: int, dtype: np.dtype):
-	time.sleep(2)
-	print('done')
+# @profile
+def main(N: int, dtype: np.dtype, view=False, **kwargs) -> km.KuramotoSolver:
+	solver = km.SimpleSolver(N=N, dtype=dtype, store_samples=view, **kwargs)
+	solver.integrate()
+
+	if view:
+		solver.play_video()
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='2D lattice Kuramoto model')
+	required = parser.add_argument_group('required arguments')
+	required.add_argument('-N', type=int, help='Size of the problem', required=True)
+	parser.add_argument('-K', type=float, help='Coupling strength')
+	parser.add_argument('-v', help='View result', action='store_true', default=False)
 	parser.add_argument('--dtype', type=str, default='float64', help='Precision')
-	parser.add_argument('-N', type=int, help='Size of the problem')
 	args = parser.parse_args()
 
-	main(args.N, np.dtype(args.dtype))
+	main(args.N, np.dtype(args.dtype), view=args.v, K=args.K)
