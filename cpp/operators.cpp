@@ -58,7 +58,6 @@ void km_laplace_f32(
   }
 }
 
-
 PYBIND11_MODULE(_cpp, m) {
 	m.def("km_laplace", &km_laplace<double>, "Kuramoto Laplace operator",
     py::arg("X").noconvert(),

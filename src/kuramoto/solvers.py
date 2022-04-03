@@ -60,7 +60,7 @@ class NumpySolver(KuramotoSolver):
 		return dudt
 
 '''
-Numpy solver -- using NumPy routines
+Custom C++ solver 
 '''
 
 class CppSolver(KuramotoSolver):
