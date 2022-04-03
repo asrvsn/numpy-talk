@@ -1,4 +1,9 @@
 ```bash
-kernprof -l ./bin/main -N 100 -K 2
-python -m line_profiler main.lprof
+./bin/main -N 100 -K 2 -T 1000 -p
+```
+
+Profiling (time and memory)
+```bash
+mprof run ./bin/main -N 100 -K 2 -T 1000
+mprof plot --flame
 ```

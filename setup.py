@@ -1,16 +1,7 @@
 import sys
-
-try:
-	from skbuild import setup
-except ImportError:
-	print(
-		"Please update pip, you need pip 10 or greater,\n"
-		" or you need to install the PEP 518 requirements in pyproject.toml yourself",
-		file=sys.stderr,
-	)
-	raise
-
-from setuptools import find_packages
+from glob import glob
+from setuptools import setup, find_packages
+from pybind11.setup_helpers import Pybind11Extension, build_ext
 
 setup(
 	name='kuramoto',
@@ -25,8 +16,17 @@ setup(
 	install_requires=[
 		'numpy>=1.22.0',
 		'matplotlib',
+		'line_profiler',
 	],
-	# TODO: set -O3 and inline flags
-	cmake_install_dir="src/kuramoto",
 	include_package_data=True,
+	cmdclass={"build_ext": build_ext},
+	ext_modules=[
+		Pybind11Extension(
+			'kuramoto._cpp',
+			include_dirs=['./cpp'],
+			sources=sorted(glob('cpp/*.c*')),
+			define_macros = [('EXTENSION_NAME', '_cpp')],
+			extra_compile_args = ['-O3', '-Wall'],
+		),
+	],
 )

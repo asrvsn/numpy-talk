@@ -8,7 +8,7 @@ import numpy.typing as npt
 from .base import *
 
 # Import C++ shared object file -- this will appear in this directory at build-time
-# import kuramoto._cpp
+import kuramoto._cpp as _cpp
 
 '''
 Naive solver -- using for loops
@@ -44,7 +44,6 @@ Numpy solver -- using NumPy routines
 class NumpySolver(KuramotoSolver):
 
 	def dudt(self, u: npt.NDArray) -> npt.NDArray:
-		''' Centered-difference gradient with zero Neumann condition '''
 		dudt = self.omega.copy()
 
 		dudx_right = u[:, 1:] - u[:, :-1]
@@ -58,5 +57,25 @@ class NumpySolver(KuramotoSolver):
 		dudt[:-1, :] += self.K * np.sin(dudy_down)
 		dudt[1:, :] += self.K * np.sin(-dudy_down)
 
+		return dudt
+
+'''
+Numpy solver -- using NumPy routines
+'''
+
+class CppSolver(KuramotoSolver):
+
+	def __post_init__(self):
+		super().__post_init__()
+		if self.dtype == np.float64:
+			self._cpp_fun = _cpp.km_laplace
+		elif self.dtype == np.float32:
+			self._cpp_fun = _cpp.km_laplace_f32
+		else:
+			raise ValueError(f'dtype must either be float32 or float64, got {self.dtype}')
+
+	def dudt(self, u: npt.NDArray) -> npt.NDArray:
+		dudt = self.omega.copy()
+		self._cpp_fun(u, dudt, self.K)
 		return dudt
 

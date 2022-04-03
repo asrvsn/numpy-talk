@@ -9,6 +9,8 @@ import numpy.typing as npt
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+import line_profiler
+import atexit
 
 # Import C++ shared object file -- this will appear in this directory at build-time
 # import kuramoto._cpp
@@ -17,21 +19,28 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 class KuramotoSolver:
 	N: int 												# Size of the domain (N x N)
 	K: float = 3.0 								# Coupling constant
-	t_i: float = 0.0 							# Start time
-	t_f: float = 10.0 						# Stop time
+	t: float = 0.0 								# Start time
+	T: float = 10.0 							# Stop time
 	dt: float = 0.1 							# Time step
 	dtype: np.dtype = np.float64 	# Precision for computations
-	store_samples: bool = True 		# Whether to store solutions
+	store_samples: bool = False 		# Whether to store solutions
+	profile: bool = False 				# Whether to run the line-profiler
 
 
 	def __post_init__(self):
 		# Initialize the state
 		np.random.seed(0) # For reproducibility
-		self.t = self.t_i
 		self.initial_state = np.random.uniform(0, 2*np.pi, size=(self.N, self.N)).astype(self.dtype)
 		self.state = self.initial_state.copy()
 		self.omega = np.random.uniform(0, 1, size=(self.N, self.N)).astype(self.dtype) # Intrinsic frequencies
 		self.samples = [self.state.copy()] if self.store_samples else []
+		print(f'Using dtype: {self.dtype}')
+		if self.profile:
+			print('Running profiler.')
+			pf = line_profiler.LineProfiler()
+			self.dudt = pf(self.dudt)
+			atexit.register(pf.print_stats)
+
 
 	@abstractmethod
 	def dudt(self, u: npt.NDArray) -> npt.NDArray:
@@ -45,7 +54,7 @@ class KuramotoSolver:
 
 	def integrate(self):
 		print('Solving...')
-		while self.t < self.t_f:
+		while self.t < self.T:
 			self.step()
 			if self.store_samples:
 				self.samples.append(self.state.copy())
