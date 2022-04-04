@@ -5,6 +5,7 @@
 #include <pybind11/numpy.h>
 #include <math.h>
 #include <stdio.h>
+#include <omp.h>
 
 namespace py = pybind11;
 
