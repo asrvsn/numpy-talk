@@ -48,7 +48,7 @@ void km_laplace_parallel(
   const int m = X.shape(0);
   const int n = X.shape(1);
 
-  #pragma omp parallel collapse(2) shared(X_data, Y_data, m, n)
+  #pragma omp parallel for collapse(2) shared(X_data, Y_data, m, n)
   for (int i = 0; i < m; i++) {
     for (int j = 0; j < n; j++) {
       auto x = X_data(i, j);
