@@ -1,6 +1,4 @@
 setuptools
 wheel
-scikit-build
-cmake
 ninja
 pybind11

@@ -65,17 +65,8 @@ Custom C++ solver
 
 class CppSolver(KuramotoSolver):
 
-	def __post_init__(self):
-		super().__post_init__()
-		if self.dtype == np.float64:
-			self._cpp_fun = _cpp.km_laplace
-		elif self.dtype == np.float32:
-			self._cpp_fun = _cpp.km_laplace_f32
-		else:
-			raise ValueError(f'dtype must either be float32 or float64, got {self.dtype}')
-
 	def dudt(self, u: npt.NDArray) -> npt.NDArray:
 		dudt = self.omega.copy()
-		self._cpp_fun(u, dudt, self.K)
+		_cpp.km_laplace(u, dudt, self.K)
 		return dudt
 
