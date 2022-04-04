@@ -4,6 +4,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 #include <math.h>
+#include <stdio.h>
 
 namespace py = pybind11;
 
@@ -33,6 +34,20 @@ void km_laplace(
   }
 }
 
+template <typename T>
+void km_laplace_parallel(
+  py::array_t<T> X,
+  py::array_t<T> Y,
+  float K
+  )
+// Kuramoto Laplacian 
+{
+  #pragma omp parallel for
+  for(int i=0;i<10;i++){
+    printf("%i\n",i);
+  }
+}
+
 PYBIND11_MODULE(_cpp, m) {
 	m.def("km_laplace", &km_laplace<double>, "Kuramoto Laplace operator",
     py::arg("X").noconvert(),
@@ -40,6 +55,16 @@ PYBIND11_MODULE(_cpp, m) {
     py::arg("K")
   );
   m.def("km_laplace", &km_laplace<float>, "Kuramoto Laplace operator",
+    py::arg("X").noconvert(),
+    py::arg("Y").noconvert(),
+    py::arg("K")
+  );
+  m.def("km_laplace_parallel", &km_laplace_parallel<double>, "Parallel Kuramoto Laplace operator",
+    py::arg("X").noconvert(),
+    py::arg("Y").noconvert(),
+    py::arg("K")
+  );
+  m.def("km_laplace_parallel", &km_laplace_parallel<float>, "Parallel Kuramoto Laplace operator",
     py::arg("X").noconvert(),
     py::arg("Y").noconvert(),
     py::arg("K")

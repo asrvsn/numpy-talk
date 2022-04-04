@@ -4,12 +4,16 @@ from setuptools import setup, find_packages
 from pybind11.setup_helpers import Pybind11Extension, build_ext
 import platform
 
+cflags = ['-O3', '-Wall']
+if sys.platform in ['linux', 'linux2']:
+	cflags.append('-fopenmp') # Link OpenMP
+
 ext = Pybind11Extension(
 	'kuramoto._cpp',
 	include_dirs=['./cpp'],
 	sources=sorted(glob('cpp/*.c*')),
 	define_macros = [('EXTENSION_NAME', '_cpp')],
-	extra_compile_args = ['-O3', '-Wall'],
+	extra_compile_args = cflags,
 )
 
 setup(
