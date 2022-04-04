@@ -1,8 +1,14 @@
+# System requirements
+
+Python >= 3.9 ideally with `conda`.
+
 # Building
 
 Ubuntu:
 ```bash
 sudo apt-get install build-essential libomp-dev -y
+pip install -r setup-requirements.txt
+pip install .
 ```
 
 Docker:
@@ -28,3 +34,9 @@ Docker:
 ```bash
 docker run -it kuramoto 
 ```
+
+# References
+
+* https://github.com/xflash96/pybind11_package_example/blob/main/tutorial.md
+* https://gameprogrammingpatterns.com/data-locality.html
+* https://pybind11.readthedocs.io/en/stable/advanced/pycpp/numpy.html#vectorizing-functions
