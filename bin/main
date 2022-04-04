@@ -9,8 +9,13 @@ import numpy as np
 
 import kuramoto as km
 
-def main(N: int, dtype: np.dtype, view=False, **kwargs) -> km.KuramotoSolver:
-	solver = km.CppSolver(N=N, dtype=dtype, store_samples=view, **kwargs)
+def main(N: int, dtype: np.dtype, view=False, parallel=False, **kwargs) -> km.KuramotoSolver:
+	if parallel:
+		print('Multithreading enabled')
+		solver = km.ParallelCppSolver(N=N, dtype=dtype, store_samples=view, **kwargs)
+	else:
+		solver = km.CppSolver(N=N, dtype=dtype, store_samples=view, **kwargs)
+
 	solver.integrate()
 
 	if view:
@@ -25,6 +30,7 @@ if __name__ == '__main__':
 	parser.add_argument('-v', help='View result', action='store_true', default=False)
 	parser.add_argument('-p', help='Run line profiler', action='store_true', default=False)
 	parser.add_argument('-d', type=str, default='float64', help='Precision')
+	parser.add_argument('-m', help='Enable multithreading', action='store_true', default=False)
 	args = parser.parse_args()
 
-	main(args.N, np.dtype(args.d), view=args.v, K=args.K, profile=args.p, T=args.T)
+	main(args.N, np.dtype(args.d), view=args.v, parallel=args.m, K=args.K, profile=args.p, T=args.T)

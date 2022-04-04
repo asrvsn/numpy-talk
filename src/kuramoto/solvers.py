@@ -70,3 +70,14 @@ class CppSolver(KuramotoSolver):
 		_cpp.km_laplace(u, dudt, self.K)
 		return dudt
 
+'''
+C++ solver parallelized with OpenMP
+'''
+
+class ParallelCppSolver(KuramotoSolver):
+
+	def dudt(self, u: npt.NDArray) -> npt.NDArray:
+		dudt = self.omega.copy()
+		_cpp.km_laplace_parallel(u, dudt, self.K)
+		return dudt
+

@@ -140,3 +140,4 @@ cython_debug/
 # Profiler output
 *.lprof
 mprofile*
+perf.data

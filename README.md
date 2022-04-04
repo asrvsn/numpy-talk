@@ -2,7 +2,7 @@
 
 Ubuntu:
 ```bash
-sudo apt-get install build-essential -y
+sudo apt-get install build-essential libomp-dev -y
 ```
 
 Docker:
@@ -26,5 +26,5 @@ mprof plot --flame
 
 Docker:
 ```bash
-docker run -it kuramoto --privileged # Required for perf 
+docker run -it kuramoto 
 ```
