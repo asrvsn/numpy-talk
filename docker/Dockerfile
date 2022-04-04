@@ -5,7 +5,7 @@ SHELL ["/bin/bash", "--login", "-c"]
 # Disable interactive prompts when installing packages
 ARG DEBIAN_FRONTEND=noninteractive 
 
-RUN apt-get update && apt-get install -y build-essential pkg-config
+RUN apt-get update && apt-get install -y build-essential pkg-config libomp-dev
 
 RUN mamba install -y python=3.10
 RUN pip install --upgrade pip

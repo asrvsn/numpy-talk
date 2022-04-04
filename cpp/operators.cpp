@@ -20,9 +20,9 @@ void km_laplace(
   const int m = X.shape(0);
   const int n = X.shape(1);
 
-  int i, j;
-  for (i = 0; i <= m; i++) {
-    for (j = 0; j <= n; j++) {
+  int i = 0, j = 0;
+  for (i = 0; i < m; i++) {
+    for (j = 0; j < n; j++) {
       auto x = X_data(i, j);
 
       if (i > 0) Y_data(i, j) += K * sin(X_data(i-1, j) - x);

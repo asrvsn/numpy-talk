@@ -26,5 +26,5 @@ mprof plot --flame
 
 Docker:
 ```bash
-docker run -it kuramoto
+docker run -it kuramoto --privileged # Required for perf 
 ```
