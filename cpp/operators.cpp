@@ -41,11 +41,23 @@ void km_laplace_parallel(
   py::array_t<T> Y,
   float K
   )
-// Kuramoto Laplacian 
+// Parallel Kuramoto Laplacian 
 {
-  #pragma omp parallel for
-  for(int i=0;i<10;i++){
-    printf("%i\n",i);
+  auto X_data = X.template unchecked<2>(); 
+  auto Y_data = Y.template mutable_unchecked<2>(); 
+  const int m = X.shape(0);
+  const int n = X.shape(1);
+
+  #pragma omp parallel collapse(2) shared(X_data, Y_data, m, n)
+  for (int i = 0; i < m; i++) {
+    for (int j = 0; j < n; j++) {
+      auto x = X_data(i, j);
+
+      if (i > 0) Y_data(i, j) += K * sin(X_data(i-1, j) - x);
+      if (j > 0) Y_data(i, j) += K * sin(X_data(i, j-1) - x);
+      if (i < m-1) Y_data(i, j) += K * sin(X_data(i+1, j) - x);
+      if (j < n-1) Y_data(i, j) += K * sin(X_data(i, j+1) - x);
+    }
   }
 }
 
