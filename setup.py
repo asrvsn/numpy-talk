@@ -30,9 +30,10 @@ setup(
 	packages=find_packages(where="src"),
 	python_requires='>=3.9',
 	install_requires=[
-		'numpy>=1.22.0',
+		'numpy>=1.21',
 		'matplotlib',
 		'line_profiler',
+		'perfplot',
 	],
 	include_package_data=True,
 	cmdclass={"build_ext": build_ext},

@@ -32,8 +32,10 @@ mprof plot --flame
 
 Docker:
 ```bash
-docker run -it kuramoto 
+docker run -p 8888:8888 kuramoto 
 ```
+
+Then navigate to [localhost:8888](localhost:8888)
 
 # References
 

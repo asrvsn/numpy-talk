@@ -12,9 +12,6 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import line_profiler
 import atexit
 
-# Import C++ shared object file -- this will appear in this directory at build-time
-# import kuramoto._cpp
-
 @dataclass
 class KuramotoSolver:
 	N: int 												# Size of the domain (N x N)
@@ -23,7 +20,7 @@ class KuramotoSolver:
 	T: float = 10.0 							# Stop time
 	dt: float = 0.1 							# Time step
 	dtype: np.dtype = np.float64 	# Precision for computations
-	store_samples: bool = False 		# Whether to store solutions
+	record: bool = False 		# Whether to store solutions
 	profile: bool = False 				# Whether to run the line-profiler
 
 
@@ -33,13 +30,13 @@ class KuramotoSolver:
 		self.initial_state = np.random.uniform(0, 2*np.pi, size=(self.N, self.N)).astype(self.dtype)
 		self.state = self.initial_state.copy()
 		self.omega = np.random.uniform(0, 1, size=(self.N, self.N)).astype(self.dtype) # Intrinsic frequencies
-		self.samples = [self.state.copy()] if self.store_samples else []
-		print(f'Using dtype: {self.dtype}')
+		self.samples = [self.state.copy()] if self.record else []
+		if self.profile or self.record:
+			print(f'Using dtype: {self.dtype}')
 		if self.profile:
 			print('Running profiler.')
-			pf = line_profiler.LineProfiler()
-			self.dudt = pf(self.dudt)
-			atexit.register(pf.print_stats)
+			self.profiler = line_profiler.LineProfiler()
+			self.dudt = self.profiler(self.dudt)
 
 
 	@abstractmethod
@@ -53,17 +50,21 @@ class KuramotoSolver:
 		self.state += self.dudt(self.state) * self.dt
 
 	def integrate(self):
-		print('Solving...')
+		if self.profile or self.record:
+			print('Solving...')
 		while self.t < self.T:
 			self.step()
-			if self.store_samples:
+			if self.record:
 				self.samples.append(self.state.copy())
 			self.t += self.dt
-		print('Finished.')
+		if self.profile or self.record:
+			print('Finished.')
+		if self.profile:
+			self.profiler.print_stats()
 
 	def play_video(self):
 		fig = plt.figure(figsize=(5, 4))
-		ax = fig.add_subplot(autoscale_on=False, xlim=(0, self.N), ylim=(0, self.N))
+		ax = fig.add_subplot(autoscale_on=False, xlim=(0, self.N-1), ylim=(0, self.N-1))
 		im = ax.imshow(np.sin(self.initial_state), interpolation='None')
 		im.set_clim(-1, 1)
 		div = make_axes_locatable(ax)
@@ -74,5 +75,6 @@ class KuramotoSolver:
 			im.set_data(np.sin(self.samples[i]))
 			return [im]
 
-		ani = animation.FuncAnimation(fig, animate, frames=len(self.samples), interval=self.dt*1000, blit=True)
+		anim = animation.FuncAnimation(fig, animate, frames=len(self.samples), interval=self.dt*1000, blit=True)
 		plt.show()
+		return anim
